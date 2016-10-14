@@ -1,16 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import           Web.Scotty
-import           Web.Scotty.TLS (scottyTLS)
-
+import           Control.Monad.IO.Class (liftIO)
 import           QRCode
+import           Web.Scotty
+import           Web.Scotty.TLS         (scottyTLS)
 
 main :: IO ()
 main = do
-  qrCodeToPngFile "surprise.png" "Whats up Jack"
-
   scottyTLS 3000 "ssl/key.pem" "ssl/cert.pem" $ do
     get "/:word" $ do
       beam <- param "word"
-      html $ mconcat ["<h1>Scotty, ", beam, " me up!</h1>"]
+      liftIO $ qrCodeToPngFile "qrcode.png" beam
+      file "qrcode.png"
 

@@ -15,5 +15,6 @@ executable          server
                   , array
                   -- , split
                   , JuicyPixels >= 3.2.7 && < 3.3.0
-                  , opaleye
+                  -- , opaleye
+                  , transformers >= 0.4.2 && < 0.4.3
     hs-source-dirs: src
