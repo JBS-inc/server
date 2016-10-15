@@ -16,7 +16,7 @@ executable          server
                   , array
                   -- , split
                   , JuicyPixels >= 3.2.7 && < 3.3.0
-                  , opaleye
+                  , opaleye >= 0.5.1.1 && < 0.5.2
                   , transformers >= 0.4.2 && < 0.4.3
                   , product-profunctors >= 0.6.3 && < 0.6.4
                   , iproute >= 1.7 && < 1.8
@@ -25,4 +25,6 @@ executable          server
                   , postgresql-simple >= 0.5.1 && < 0.5.2
                   , bytestring >= 0.10.6 && < 0.10.7
                   , aeson
+                  , uuid-aeson
+                  , text >= 1.2.2 && < 1.2.3
     hs-source-dirs: src

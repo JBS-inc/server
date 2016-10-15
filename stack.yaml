@@ -3,6 +3,8 @@ extra-package-dbs: []
 packages:
 - '.'
 extra-deps:
+- opaleye-0.5.1.1
 - qrcode-0.1.2
 - scotty-tls-0.4.1
+- uuid-aeson-0.1.0.0
 resolver: lts-5.18

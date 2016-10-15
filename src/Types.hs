@@ -1,10 +1,8 @@
 {-# LANGUAGE Arrows                #-}
-{-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
-{-# OPTIONS_GHC -fno-warn-orphans  #-}
 
 module Types where
 
@@ -12,10 +10,8 @@ import           Data.Aeson.TH
 import           Data.Int
 import           Data.Profunctor.Product.TH (makeAdaptorAndInstance)
 import           Data.UUID
-import           GHC.Generics
+import           Data.UUID.Aeson ()
 import           Opaleye
-
-$(deriveJSON defaultOptions ''UUID)
 
 data Library' a b c d e
   = Library
@@ -24,7 +20,7 @@ data Library' a b c d e
     , l_ip              :: c
     , l_points_per_hour :: d
     , l_location        :: e
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq)
 
 $(deriveJSON defaultOptions ''Library')
 
@@ -48,6 +44,18 @@ libraryTable = Table "libraries" $ pLibrary
 libraryQuery :: Query LibraryColumn
 libraryQuery = queryTable libraryTable
 
+data NewAchievement
+  = NewAchievement
+    { na_name          :: String
+    , na_description   :: String
+    , na_points        :: Int
+    , na_creation_time :: Int64
+    , na_expiry_time   :: Int64
+    , na_hidden        :: Bool
+    } deriving (Show, Eq)
+
+$(deriveJSON defaultOptions ''NewAchievement)
+
 data Achievement' a b c d e f g h i
   = Achievement
     { a_id            :: a
@@ -59,21 +67,21 @@ data Achievement' a b c d e f g h i
     , a_creation_time :: g
     , a_expiry_time   :: h
     , a_hidden        :: i
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq)
 
 $(deriveJSON defaultOptions ''Achievement')
 
-type Achievement =
-  Achievement' Int UUID String String Int Int Int64 Int64 Bool
-type AchievementColumn =
-  Achievement' (Column PGInt4) (Column PGUuid) (Column PGText) (Column PGText) (Column PGInt4) (Column PGInt4) (Column PGInt8) (Column PGInt8) (Column PGBool)
+type Achievement a =
+  Achievement' a UUID String String Int Int Int64 Int64 Bool
+type AchievementColumn a =
+  Achievement' a (Column PGUuid) (Column PGText) (Column PGText) (Column PGInt4) (Column PGInt4) (Column PGInt8) (Column PGInt8) (Column PGBool)
 
 $(makeAdaptorAndInstance "pAchievement" ''Achievement')
 
-achievementTable :: Table AchievementColumn AchievementColumn
+achievementTable :: Table (AchievementColumn (Maybe (Column PGInt4))) (AchievementColumn (Column PGInt4))
 achievementTable = Table "achievements" $ pAchievement
   Achievement
-    { a_id            = required "id"
+    { a_id            = optional "id"
     , a_uuid          = required "achievement_uuid"
     , a_name          = required "name"
     , a_description   = required "description"
@@ -84,7 +92,7 @@ achievementTable = Table "achievements" $ pAchievement
     , a_hidden        = required "hidden"
     }
 
-achievementQuery :: Query AchievementColumn
+achievementQuery :: Query (AchievementColumn (Column PGInt4))
 achievementQuery = queryTable achievementTable
 
 data User' a b c
@@ -92,7 +100,7 @@ data User' a b c
     { u_id        :: a
     , u_client_id :: b
     , u_token     :: c
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq)
 
 $(deriveJSON defaultOptions ''User')
 
@@ -118,7 +126,7 @@ data UserAchievement' a b c d
     , ua_user_id        :: b
     , ua_achievement_id :: c
     , ua_timestamp      :: d
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq)
 
 $(deriveJSON defaultOptions ''UserAchievement')
 
@@ -148,7 +156,7 @@ data UserLibrary' a b c d e
     , ul_library_id :: c
     , ul_timestamp  :: d
     , ul_duration   :: e
-    } deriving (Show, Eq, Generic)
+    } deriving (Show, Eq)
 
 $(deriveJSON defaultOptions ''UserLibrary')
 
