@@ -1,5 +1,5 @@
 -- DROP Tables (For testing purposes)
-DROP TABLE LIBRARIES, ACHIEVEMENTS, USERS, USER_ACHIEVEMENT_RELATIONS, USER_LIBRARY_RELATIONS;
+DROP TABLE LIBRARIES, ACHIEVEMENTS, USERS, USER_ACHIEVEMENT_RELATIONS, USER_LIBRARY_RELATIONS CASCADE;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -37,7 +37,7 @@ CREATE TABLE USER_ACHIEVEMENT_RELATIONS (
     id               int,
     user_id          int,
     achievement_id   int,
-    achievement_time timestamp,
+    achievement_time bigint,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES USERS(id),
     FOREIGN KEY (achievement_id) REFERENCES ACHIEVEMENTS(id)
@@ -47,8 +47,8 @@ CREATE TABLE USER_LIBRARY_RELATIONS (
     id               int,
     user_id          int,
     library_id       int,
-    visit_time       timestamp,
-    duration         time,
+    visit_time       bigint,
+    duration         bigint,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES USERS(id),
     FOREIGN KEY (library_id) REFERENCES LIBRARIES(id)
