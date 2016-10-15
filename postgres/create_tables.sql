@@ -57,7 +57,8 @@ CREATE TABLE USER_LIBRARY_RELATIONS (
 -- Populating the tables
 INSERT INTO LIBRARIES VALUES
 -- Random values for testing
-(0, 'Test Library', '127.0.0.1', 20, '55.947311, -3.201912');
+(0, 'Test Library', '127.0.0.1', 20, '55.947311, -3.201912'),
+(1, 'Test Library 2', '127.0.0.2', 25, '55.947311, -3.201912');
 
 INSERT INTO USERS VALUES
 -- Random values for testing
@@ -67,4 +68,5 @@ INSERT INTO USERS VALUES
 INSERT INTO ACHIEVEMENTS VALUES
 -- Random values for testing
 (0, uuid_generate_v4(), '3D printing', '3D print an object at the Test Library', 50, 0, 1476466113, 1477675680, False),
-(1, uuid_generate_v4(), 'Borrowing 1984 by George Orwell', 'Find the book "1984" and read it!', 20, 0, 1476466113, 1477675680, False);
+(1, uuid_generate_v4(), 'Borrowing 1984 by George Orwell', 'Find the book "1984" and read it!', 20, 0, 1476466113, 1477675680, False),
+(2, uuid_generate_v4(), '3D printing', '3D print an object at the Test Library', 50, 1, 1476466113, 1477675680, False);

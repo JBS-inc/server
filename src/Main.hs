@@ -1,14 +1,16 @@
+{-# LANGUAGE Arrows              #-}
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+import           Control.Arrow
 import           Control.Monad.IO.Class     (liftIO)
-import           QRCode
-import           Web.Scotty
--- import           Web.Scotty.TLS         (scottyTLS)
 import qualified Data.ByteString.Lazy.Char8 as BLC
 import           Database.PostgreSQL.Simple
 import           Opaleye
+import           QRCode
 import           Types
+import           Web.Scotty
+-- import           Web.Scotty.TLS         (scottyTLS)
 
 main :: IO ()
 main = do
@@ -31,7 +33,16 @@ main = do
       liftIO $ BLC.putStrLn receivedData
       raw receivedData
 
-    get "/achievements/get/:arg" $ do
-      (ach :: [Achievement]) <- liftIO $ runQuery conn achievementQuery
-      json ach
+    post "/achievements/get/" $ do
+      libId   <- param "libid"
+      expired <- param "expired"
+      achs    <- liftIO $ getAchievements conn libId expired
+      json achs
 
+getAchievements :: Connection -> Int -> Bool -> IO [Achievement]
+getAchievements conn libId expired = runQuery conn q
+  where
+    q = proc () -> do
+      row <- achievementQuery -< ()
+      restrict -< a_library_id row .=== constant libId
+      returnA -< row

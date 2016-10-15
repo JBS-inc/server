@@ -4,6 +4,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell       #-}
+{-# OPTIONS_GHC -fno-warn-orphans  #-}
 
 module Types where
 
@@ -18,11 +19,11 @@ $(deriveJSON defaultOptions ''UUID)
 
 data Library' a b c d e
   = Library
-    { l_id            :: a
-    , l_name          :: b
-    , ip              :: c
-    , points_per_hour :: d
-    , location        :: e
+    { l_id              :: a
+    , l_name            :: b
+    , l_ip              :: c
+    , l_points_per_hour :: d
+    , l_location        :: e
     } deriving (Show, Eq, Generic)
 
 $(deriveJSON defaultOptions ''Library')
@@ -37,11 +38,11 @@ $(makeAdaptorAndInstance "pLibrary" ''Library')
 libraryTable :: Table LibraryColumn LibraryColumn
 libraryTable = Table "libraries" $ pLibrary
   Library
-    { l_id            = required "id"
-    , l_name          = required "name"
-    , ip              = required "ip"
-    , points_per_hour = required "points_per_hour"
-    , location        = required "location"
+    { l_id              = required "id"
+    , l_name            = required "name"
+    , l_ip              = required "ip"
+    , l_points_per_hour = required "points_per_hour"
+    , l_location        = required "location"
     }
 
 libraryQuery :: Query LibraryColumn
@@ -49,15 +50,15 @@ libraryQuery = queryTable libraryTable
 
 data Achievement' a b c d e f g h i
   = Achievement
-    { a_id          :: a
-    , uuid          :: b
-    , a_name        :: c
-    , description   :: d
-    , points        :: e
-    , a_library_id  :: f
-    , creation_time :: g
-    , expiry_time   :: h
-    , hidden        :: i
+    { a_id            :: a
+    , a_uuid          :: b
+    , a_name          :: c
+    , a_description   :: d
+    , a_points        :: e
+    , a_library_id    :: f
+    , a_creation_time :: g
+    , a_expiry_time   :: h
+    , a_hidden        :: i
     } deriving (Show, Eq, Generic)
 
 $(deriveJSON defaultOptions ''Achievement')
@@ -72,15 +73,15 @@ $(makeAdaptorAndInstance "pAchievement" ''Achievement')
 achievementTable :: Table AchievementColumn AchievementColumn
 achievementTable = Table "achievements" $ pAchievement
   Achievement
-    { a_id          = required "id"
-    , uuid          = required "achievement_uuid"
-    , a_name        = required "name"
-    , description   = required "description"
-    , points        = required "points"
-    , a_library_id  = required "library_id"
-    , creation_time = required "creation_time"
-    , expiry_time   = required "expiry_time"
-    , hidden        = required "hidden"
+    { a_id            = required "id"
+    , a_uuid          = required "achievement_uuid"
+    , a_name          = required "name"
+    , a_description   = required "description"
+    , a_points        = required "points"
+    , a_library_id    = required "library_id"
+    , a_creation_time = required "creation_time"
+    , a_expiry_time   = required "expiry_time"
+    , a_hidden        = required "hidden"
     }
 
 achievementQuery :: Query AchievementColumn
@@ -88,9 +89,9 @@ achievementQuery = queryTable achievementTable
 
 data User' a b c
   = User
-    { u_id      :: a
-    , client_id :: b
-    , token     :: c
+    { u_id        :: a
+    , u_client_id :: b
+    , u_token     :: c
     } deriving (Show, Eq, Generic)
 
 $(deriveJSON defaultOptions ''User')
@@ -103,9 +104,9 @@ $(makeAdaptorAndInstance "pUser" ''User')
 userTable :: Table UserColumn UserColumn
 userTable = Table "users" $ pUser
   User
-    { u_id      = required "id"
-    , client_id = required "client_id"
-    , token     = required "token"
+    { u_id        = required "id"
+    , u_client_id = required "client_id"
+    , u_token     = required "token"
     }
 
 userQuery :: Query UserColumn
