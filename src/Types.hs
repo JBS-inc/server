@@ -135,21 +135,29 @@ data User' a b c
 
 $(deriveJSON defaultOptions ''User')
 
-type User = User' Int String String
-type UserColumn = User' (Column PGInt4) (Column PGText) (Column PGText)
+type User a = User' a String String
+type UserColumn a = User' a (Column PGText) (Column PGText)
 
 $(makeAdaptorAndInstance "pUser" ''User')
 
-userTable :: Table UserColumn UserColumn
-userTable = Table "users" $ pUser
+userTableWrite :: Table (UserColumn (Maybe (Column PGInt4))) (UserColumn (Column PGInt4))
+userTableWrite = Table "users" $ pUser
+  User
+    { u_id        = optional "id"
+    , u_client_id = required "client_id"
+    , u_token     = required "token"
+    }
+
+userTableRead :: Table (UserColumn (Column PGInt4)) (UserColumn (Column PGInt4))
+userTableRead = Table "users" $ pUser
   User
     { u_id        = required "id"
     , u_client_id = required "client_id"
     , u_token     = required "token"
     }
 
-userQuery :: Query UserColumn
-userQuery = queryTable userTable
+userQuery :: Query (UserColumn (Column PGInt4))
+userQuery = queryTable userTableRead
 
 data UserAchievement' a b c d
   = UserAchievement

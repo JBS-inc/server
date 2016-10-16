@@ -65,18 +65,24 @@ main = do
       userId <- param "userid"
       libId  <- param "libid"
       achs   <- liftIO $ getUserAchievements conn userId libId
-      
-
       liftIO $ print achs
-
       json achs      
 
     post "/user/qr" $ do
       userId      <- param "userid"
       (Just uuid) <- fromString <$> param "uuid"
-      
       n <- liftIO $ userQR conn userId uuid
-    
+      text . pack . show $ n
+
+    post "/user/score" $ do
+      userId <- param "userid"
+      libId  <- param "libid"
+      n <- liftIO $ getUserScore conn userId libId
+      text . pack . show $ n
+
+    post "/user/login" $ do
+      username <- param "name"
+      n <- liftIO $ getUserName conn username
       text . pack . show $ n
 
 getAchievements :: Connection -> Int -> Bool -> IO [Achievement Int]
@@ -84,6 +90,7 @@ getAchievements conn libId expired = runQuery conn $
   proc () -> do
     row <- achievementQuery -< ()
     restrict -< a_library_id row .=== constant libId
+    -- restrict -< a_expiry_time row .|| constant libId
     returnA -< row
 
 addAchievements :: Connection -> [Achievement (Maybe Int)] -> IO Int64
@@ -144,12 +151,12 @@ userQR conn userId uuid = do
 getUserAchievements :: Connection -> Int -> Int -> IO [Achievement Int]
 getUserAchievements conn userId libId = fst . unzip <$> result
   where
-    result :: IO ([(Achievement Int, UserAchievementNullable)])
+    result :: IO [(Achievement Int, UserAchievementNullable)]
     result = runQuery conn $ getUserAchievementsQuery userId libId
 
 getUserAchievementsQuery :: Int -> Int
                          -> Opaleye.Query ( AchievementColumn (Column PGInt4)
-                                          , UserAchievementColumnNullable)
+                                          , UserAchievementColumnNullable )
 getUserAchievementsQuery userId libId =
   keepWhen (\(a, ua) ->
     (constant (Just userId) .== ua_user_id ua) .&&
@@ -158,3 +165,41 @@ getUserAchievementsQuery userId libId =
     achievementQuery
     (queryTable userAchievementTableNullableRead)
     (\(ach, userAch) -> toNullable (a_id ach) .== ua_achievement_id userAch)
+
+getUserScore :: Connection -> Int -> Int -> IO Int
+getUserScore conn userId libId = showScore <$> result
+  where
+    result :: IO [Int]
+    result = runQuery conn
+           . aggregate Opaleye.sum
+           $ pointsArr <<< getUserAchievementsQuery userId libId
+
+    pointsArr :: QueryArr ( AchievementColumn (Column PGInt4)
+                          , UserAchievementColumnNullable )
+                          ( Column PGInt4 )
+    pointsArr = arr (\(a, _) -> a_points a)
+
+    showScore :: [Int] -> Int
+    showScore []    = 0
+    showScore (x:_) = x
+
+getUserName :: Connection -> String -> IO Int
+getUserName conn username = do
+  i <- tryGetId
+  case i of
+    [x] -> return x
+    []  -> do
+      _ <- runInsert conn userTableWrite $ constant user
+      head <$> tryGetId
+    _   -> error "Expected a single user, found several"
+  where
+    user :: User (Maybe Int)
+    user = User Nothing username ""
+
+    tryGetId :: IO [Int]
+    tryGetId = runQuery conn $
+      proc () -> do
+        row <- userQuery -< ()
+        restrict -< u_client_id row .=== constant username
+        returnA -< u_id row
+
