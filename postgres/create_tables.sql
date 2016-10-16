@@ -4,7 +4,7 @@ DROP TABLE LIBRARIES, ACHIEVEMENTS, USERS, USER_ACHIEVEMENT_RELATIONS, USER_LIBR
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE LIBRARIES (
-    id              int,
+    id              serial,
     name            text,
     ip              text,
     points_per_hour int,
@@ -13,14 +13,14 @@ CREATE TABLE LIBRARIES (
 );
 
 CREATE TABLE USERS (
-    id              int,
+    id              serial,
     client_id       text,
     token           text,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE ACHIEVEMENTS (
-    id               int,
+    id               serial,
     achievement_uuid uuid,
     name             text,
     description      text,
@@ -34,7 +34,7 @@ CREATE TABLE ACHIEVEMENTS (
 );
 
 CREATE TABLE USER_ACHIEVEMENT_RELATIONS (
-    id               int,
+    id               serial,
     user_id          int,
     achievement_id   int,
     achievement_time bigint,
@@ -44,7 +44,7 @@ CREATE TABLE USER_ACHIEVEMENT_RELATIONS (
 );
 
 CREATE TABLE USER_LIBRARY_RELATIONS (
-    id               int,
+    id               serial,
     user_id          int,
     library_id       int,
     visit_time       bigint,

@@ -78,8 +78,8 @@ type AchievementColumn a =
 
 $(makeAdaptorAndInstance "pAchievement" ''Achievement')
 
-achievementTable :: Table (AchievementColumn (Maybe (Column PGInt4))) (AchievementColumn (Column PGInt4))
-achievementTable = Table "achievements" $ pAchievement
+achievementTableWrite :: Table (AchievementColumn (Maybe (Column PGInt4))) (AchievementColumn (Column PGInt4))
+achievementTableWrite = Table "achievements" $ pAchievement
   Achievement
     { a_id            = optional "id"
     , a_uuid          = required "achievement_uuid"
@@ -92,8 +92,39 @@ achievementTable = Table "achievements" $ pAchievement
     , a_hidden        = required "hidden"
     }
 
+achievementTableRead :: Table (AchievementColumn (Column PGInt4)) (AchievementColumn (Column PGInt4))
+achievementTableRead = Table "achievements" $ pAchievement
+  Achievement
+    { a_id            = required "id"
+    , a_uuid          = required "achievement_uuid"
+    , a_name          = required "name"
+    , a_description   = required "description"
+    , a_points        = required "points"
+    , a_library_id    = required "library_id"
+    , a_creation_time = required "creation_time"
+    , a_expiry_time   = required "expiry_time"
+    , a_hidden        = required "hidden"
+    }
+
 achievementQuery :: Query (AchievementColumn (Column PGInt4))
-achievementQuery = queryTable achievementTable
+achievementQuery = queryTable achievementTableRead
+
+data AchievementGet' a b c d
+  = AchievementGet
+    { ag_name        :: a
+    , ag_description :: b
+    , ag_points      :: c
+    , ag_solved      :: d
+    } deriving (Show, Eq)
+
+$(deriveJSON defaultOptions ''AchievementGet')
+
+type AchievementGet =
+  AchievementGet' String String Int Bool
+type AchievementGetColumn =
+  AchievementGet' (Column PGText) (Column PGText) (Column PGInt4) (Column PGBool)
+
+$(makeAdaptorAndInstance "pAchievementGet" ''AchievementGet')
 
 data User' a b c
   = User
@@ -130,15 +161,28 @@ data UserAchievement' a b c d
 
 $(deriveJSON defaultOptions ''UserAchievement')
 
-type UserAchievement =
-  UserAchievement' Int Int Int Int64
-type UserAchievementColumn =
-  UserAchievement' (Column PGInt4) (Column PGInt4) (Column PGInt4) (Column PGInt8)
+type UserAchievement a =
+  UserAchievement' a Int Int Int64
+type UserAchievementColumn a =
+  UserAchievement' a (Column PGInt4) (Column PGInt4) (Column PGInt8)
+type UserAchievementNullable =
+  UserAchievement' (Maybe Int) (Maybe Int) (Maybe Int) (Maybe Int64)
+type UserAchievementColumnNullable =
+  UserAchievement' (Column (Nullable PGInt4)) (Column (Nullable PGInt4)) (Column (Nullable PGInt4)) (Column (Nullable PGInt8))
 
 $(makeAdaptorAndInstance "pUserAchievement" ''UserAchievement')
 
-userAchievementTable :: Table UserAchievementColumn UserAchievementColumn
-userAchievementTable = Table "user_achievement_relations" $ pUserAchievement
+userAchievementTableWrite :: Table (UserAchievementColumn (Maybe (Column PGInt4))) (UserAchievementColumn (Column PGInt4))
+userAchievementTableWrite = Table "user_achievement_relations" $ pUserAchievement
+  UserAchievement
+    { ua_id             = optional "id"
+    , ua_user_id        = required "user_id"
+    , ua_achievement_id = required "achievement_id"
+    , ua_timestamp      = required "achievement_time"
+    }
+
+userAchievementTableRead :: Table (UserAchievementColumn (Column PGInt4)) (UserAchievementColumn (Column PGInt4))
+userAchievementTableRead = Table "user_achievement_relations" $ pUserAchievement
   UserAchievement
     { ua_id             = required "id"
     , ua_user_id        = required "user_id"
@@ -146,8 +190,17 @@ userAchievementTable = Table "user_achievement_relations" $ pUserAchievement
     , ua_timestamp      = required "achievement_time"
     }
 
-userAchievementQuery :: Query UserAchievementColumn
-userAchievementQuery = queryTable userAchievementTable
+userAchievementTableNullableRead :: Table UserAchievementColumnNullable UserAchievementColumnNullable
+userAchievementTableNullableRead = Table "user_achievement_relations" $ pUserAchievement
+  UserAchievement
+    { ua_id             = required "id"
+    , ua_user_id        = required "user_id"
+    , ua_achievement_id = required "achievement_id"
+    , ua_timestamp      = required "achievement_time"
+    }
+
+userAchievementQuery :: Query (UserAchievementColumn (Column PGInt4))
+userAchievementQuery = queryTable userAchievementTableRead
 
 data UserLibrary' a b c d e
   = UserLibrary
