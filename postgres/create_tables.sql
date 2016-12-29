@@ -54,19 +54,30 @@ CREATE TABLE USER_LIBRARY_RELATIONS (
     FOREIGN KEY (library_id) REFERENCES LIBRARIES(id)
 );
 
--- Populating the tables
 INSERT INTO LIBRARIES VALUES
--- Random values for testing
-(0, 'Test Library', '127.0.0.1', 20, '55.947311, -3.201912'),
-(1, 'Test Library 2', '127.0.0.2', 25, '55.947311, -3.201912');
+(0, 'Test Library', '127.0.0.1', 20, '55.947311, -3.201912');
 
 INSERT INTO USERS VALUES
--- Random values for testing
-(0, 'Basile Henry', 'token'),
-(1, 'Jack Horsburgh', 'token');
+(DEFAULT, 'Basile', 'token'),
+(DEFAULT, 'Jack', 'token'),
+(DEFAULT, 'Stephan', 'token');
 
 INSERT INTO ACHIEVEMENTS VALUES
--- Random values for testing
-(0, uuid_generate_v4(), '3D printing', '3D print an object at the Test Library', 50, 0, 1476466113, 1477675680, False),
-(1, uuid_generate_v4(), 'Borrowing 1984 by George Orwell', 'Find the book "1984" and read it!', 20, 0, 1476466113, 1477675680, False),
-(2, uuid_generate_v4(), '3D printing', '3D print an object at the Test Library', 50, 1, 1476466113, 1477675680, False);
+-- Example Achievements
+(DEFAULT, uuid_generate_v4(), '3D Printing', 'Use the new 3D printers to print an object!', 50, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), '1984', 'Find and read the book "1984" by George Orwell in the library!', 20, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Course: Modeling 3D Objects', 'Attent the library''s course on creating 3D models.', 20, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Event: The "Future of Libraries"', 'Attend the event "The Future of Libraries"', 20, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Welcome', 'Sign up at the library and get access to all its assets!', 20, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Avid reader', 'Borrow your 10th book', 50, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Reading expert', 'Borrow your 50th book', 100, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Spreadsheet Creationist', 'Attend the library''s course on creating spreadsheets', 50, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Cold blooded', 'Borrow your 5th Thriller', 10, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'The Reading begins', 'Borrow your first book', 5, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Loyal Reader', 'Borrow your second book', 5, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Convenient', 'Use one of the library''s computers', 5, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Library celebration', 'Be in the library on your birthday', 100, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Historian', 'Borrow your 5th History novel', 10, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Spooky Library', 'Be in the library on Halloween', 50, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Thank you!', 'Attend our "Save the children" charity event', 40, 0, 1476466113, 1477675680, False),
+(DEFAULT, uuid_generate_v4(), 'Not afraid', 'Borrow your 5th Horror novel', 10, 0, 1476466113, 1477675680, False);
