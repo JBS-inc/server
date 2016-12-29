@@ -19,7 +19,7 @@ import           Web.Scotty
 
 main :: IO ()
 main = do
-  conn <- connectPostgreSQL "dbname=futlib"
+  conn <- connectPostgreSQL "dbname=library-go"
 
   -- scottyTLS 3000 "ssl/key.pem" "ssl/cert.pem" $ do
   scotty 3000 $ do
